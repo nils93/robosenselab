@@ -1,0 +1,8 @@
+# Ignoriere alle Daten
+data/
+*.png
+*.stl
+*.ply
+*.obj
+*.jpg
+*.jpeg

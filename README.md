@@ -14,7 +14,7 @@
   ```
 
 ## 2. Datenvorbereitung
-- Lade das RGB-D-Bild (von der Kamera).
+- Lade das RGB-D-Bild (von der Kamera). (erledigt)
 - Lade die CAD-Modelle der Teile, idealerweise in einem Format wie STL oder PLY.
 - Lade die Kamerakalibrierungsdaten (Intrinsische Parameter, Extrinsische Parameter).
 

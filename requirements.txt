@@ -1,0 +1,4 @@
+sudo apt-get install libgl1-mesa-glx
+sudo apt-get install libxcb-xinerama0
+pip install matplotlib
+sudo apt-get install xvfb

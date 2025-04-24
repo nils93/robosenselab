@@ -1,5 +1,4 @@
 # Ignoriere alle Daten
-data/
 *.png
 *.stl
 *.ply

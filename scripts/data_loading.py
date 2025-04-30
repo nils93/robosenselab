@@ -30,7 +30,7 @@ def load_rgbd_image(image_number):
 
 # Beispielaufruf
 if __name__ == "__main__":
-    image_number = 0  # Hier kannst du die Bildnummer anpassen (z. B. 0 bis 9)
+    image_number = 1  # Hier kannst du die Bildnummer anpassen (z. B. 0 bis 9)
     rgb_image, depth_image = load_rgbd_image(image_number)
     print(f"RGB-Bild Shape: {rgb_image.shape}")
     print(f"Tiefenbild Shape: {depth_image.shape}")

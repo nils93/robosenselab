@@ -1,51 +1,33 @@
-import sys
 import os
-
-sys.path.append('scripts')  # Füge den "scripts" Ordner zum Suchpfad hinzu
-
-import matplotlib
-matplotlib.use('Agg')  # Setzt das Backend auf 'Agg' für die Bildsicherung ohne GUI
-
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-from data_loading import load_rgbd_image  # Importiere die Funktion aus dem Skript 'data_loading.py'
+import pickle
+from scripts.model_utils import load_all_cad_models_and_extract_features
 
 def main():
-    # Bildnummer (z.B. 0 für '0.png', 1 für '1.png', etc.)
-    image_number = 0
+    cad_models_directory = 'data/cad_models'  # Verzeichnis zu den CAD-Modellen
+    output_directory = 'output'  # Der Ordner, in dem die Pickle-Datei gespeichert wird
+    output_file = os.path.join(output_directory, 'cad_model_features.pkl')  # Dateiname für die Pickle-Datei im output-Ordner
 
-    # Lade das RGB-D-Bild
-    rgb_image, depth_image = load_rgbd_image(image_number)
+    # Überprüfe, ob der Output-Ordner existiert, wenn nicht, erstelle ihn
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+        print(f"Der Ordner '{output_directory}' wurde erstellt.")
 
-    # Ausgabe der Shapes der Bilder
-    print(f"RGB-Bild Shape: {rgb_image.shape}")
-    print(f"Tiefenbild Shape: {depth_image.shape}")
-    
-    # Erstelle den Output-Ordner, falls er nicht existiert
-    output_dir = 'output'
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    # Überprüfe, ob die Pickle-Datei existiert
+    if os.path.exists(output_file):
+        print(f"Die Datei {output_file} existiert bereits. Lade die Features...")
+        # Lade die gespeicherten Keypoints und Deskriptoren
+        with open(output_file, 'rb') as f:
+            cad_models = pickle.load(f)
+        print("Features wurden erfolgreich geladen.")
+    else:
+        print(f"Die Datei {output_file} existiert nicht. Extrahiere und speichere die Features...")
+        # Extrahiere und speichere die Features, falls die Datei nicht existiert
+        cad_models = load_all_cad_models_and_extract_features(cad_models_directory, output_file)
+        print(f"Die Features wurden in {output_file} gespeichert.")
 
-    # Speichere das RGB-Bild und das Tiefenbild als PNG-Dateien im 'output'-Ordner
-    plt.figure(figsize=(10, 8))
-    
-    # RGB Bild speichern
-    plt.subplot(1, 2, 1)
-    plt.imshow(cv2.cvtColor(rgb_image, cv2.COLOR_BGR2RGB))
-    plt.title("RGB Image")
-    plt.axis('off')
-
-    # Tiefenbild speichern
-    plt.subplot(1, 2, 2)
-    plt.imshow(depth_image, cmap='gray')
-    plt.title("Depth Image")
-    plt.axis('off')
-
-    # Speichere das Bild als PNG-Datei im 'output'-Ordner
-    output_path = os.path.join(output_dir, 'rgbd_images_output.png')
-    plt.savefig(output_path, bbox_inches='tight')
-    print(f"Die Bilder wurden als '{output_path}' gespeichert.")
+    # Hier kannst du nun fortfahren, die geladenen cad_models für das Matching oder andere Aufgaben zu verwenden
+    for cad_model in cad_models:
+        print(f"Verarbeite Modell: {cad_model['filename']}")
 
 if __name__ == "__main__":
     main()

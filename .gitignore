@@ -1,7 +1,12 @@
-# Ignoriere alle Daten
+# Ignoriere nachstehende Verzeichnisse
+ungültig/
+
+# Ignoriere nachstehende Datentypen
 *.png
 *.stl
 *.ply
 *.obj
 *.jpg
 *.jpeg
+
+

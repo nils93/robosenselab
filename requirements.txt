@@ -3,8 +3,10 @@ sudo apt-get install libxcb-xinerama0
 pip install matplotlib
 sudo apt-get install xvfb
 pip install trimesh
-pip install "pyglet<2"
-sudo apt-get install libglu1-mesa
+pip install pyglet
+pip install opencv-python
+
+
 
 
 

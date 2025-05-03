@@ -1,5 +1,3 @@
-# scripts/detect.py
-
 from .match import match_keypoints
 from .feature_extraction import extract_orb_features
 import cv2

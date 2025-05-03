@@ -1,10 +1,10 @@
 import os
 from tqdm import tqdm  # Importiere tqdm für Fortschrittsanzeige
 from scripts.load_all_obj_models import load_all_obj_models
-from scripts.save_image_from_views import save_image_from_views
-from scripts.move_model_to_origin import move_model_to_origin
 from scripts.ask_for_confirmation import ask_for_confirmation
+from scripts.check_if_images_exist import check_if_images_exist
 from scripts.process_single_model import process_single_model
+from scripts.save_image_from_views import save_image_from_views
 
 # Funktion, um alle Modelle zu verarbeiten
 def process_all_models(model_directory, output_dir):
@@ -21,14 +21,28 @@ def process_all_models(model_directory, output_dir):
         # Fortschrittsanzeige mit tqdm, ohne dass zusätzliche Ausgaben für jedes Modell erfolgen
         print(f"Verarbeite {len(model_files)} Modelle...")
 
-        # Iteriere durch die Modelle und aktualisiere die Fortschrittsanzeige
-        for obj_file in tqdm(model_files, desc="Verarbeitung", unit="Modell"):
-            # Verarbeite jedes Modell ohne zusätzliche Konsolenausgaben
-            #process_single_model(obj_file, output_dir)
-            pv_mesh, model_name = process_single_model(obj_file, output_dir)
-            save_image_from_views(pv_mesh, output_dir, model_name)
+        # Zähler für die verarbeiteten Modelle
+        processed_models = 0
+
+        # Filtere Modelle heraus, bei denen Bilder bereits existieren
+        models_to_process = [model_file for model_file in model_files if not check_if_images_exist(output_dir, os.path.basename(model_file).split('.')[0])]
+        
+        # Fortschrittsanzeige für nur die verarbeiteten Modelle
+        with tqdm(total=len(models_to_process), desc="Verarbeitung", unit="Modell") as pbar:
+            for obj_file in models_to_process:
+                model_name = os.path.basename(obj_file).split('.')[0]  # Modellname ohne Erweiterung
+
+                # Verarbeite jedes Modell und erhalte das mesh und den model_name
+                pv_mesh, model_name = process_single_model(obj_file, output_dir)
+                
+                # Speichern der Bilder für das Modell
+                save_image_from_views(pv_mesh, output_dir, model_name)
+                
+                # Fortschritt aktualisieren
+                processed_models += 1
+                pbar.update(1)  # Fortschritt aktualisieren
+
+        print("Alle Modelle wurden erfolgreich verarbeitet und die Bilder gespeichert.")
     else:
         print("Verarbeitung abgebrochen.")
         return
-    print("Alle Modelle wurden erfolgreich verarbeitet und die Bilder gespeichert.")
-    return

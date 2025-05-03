@@ -3,17 +3,13 @@ import os
 import pyvista as pv
 import numpy as np
 
+from scripts.calculate_camera_positions import calculate_camera_positions
+
 # Funktion zum Speichern des Modells aus verschiedenen Perspektiven mit angepasstem Dateinamen
 def save_image_from_views(mesh, output_dir, model_name):
     # Liste der Kamerapositionen für die 6 Ansichten
-    camera_positions = [
-        (0.0, 0.0, -300),  # Vorne
-        (0.0, 0.0, 300),   # Hinten
-        (-300, 0.0, 0.0),  # Links
-        (300, 0.0, 0.0),   # Rechts
-        (0.0, 300, 0.0),   # Oben
-        (0.0, -300, 0.0),  # Unten
-    ]
+    camera_positions = calculate_camera_positions(mesh)   
+    #print(f"Camera positions: {camera_positions}")
     
     # Erstelle das Verzeichnis für das Modell, falls nicht vorhanden
     model_dir = os.path.join(output_dir, model_name)

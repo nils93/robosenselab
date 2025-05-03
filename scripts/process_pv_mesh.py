@@ -5,7 +5,7 @@ from scripts.save_image_from_views import save_image_from_views
 from scripts.move_model_to_origin import move_model_to_origin
 
 # Funktion, um ein einzelnes Modell zu verarbeiten
-def process_single_model(obj_file, output_dir):
+def process_pv_mesh(obj_file, output_dir):
     model_name = os.path.basename(obj_file).split('.')[0]  # Modellname ohne Erweiterung
     #print(f"\nVerarbeite Modell: {model_name}")
 

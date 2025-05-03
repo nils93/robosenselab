@@ -1,5 +1,8 @@
 # Ignoriere nachstehende Verzeichnisse
 ungültig/
+__pycache__
+
+__init__.py
 
 # Ignoriere nachstehende Datentypen
 *.png

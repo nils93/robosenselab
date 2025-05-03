@@ -41,8 +41,7 @@ def process_all_models(model_directory, output_dir, n_views=50):
                 pv_mesh, model_name = process_pv_mesh(obj_file, output_dir)
                 
                 # Speichern der Bilder für das Modell
-                export_dir = 'data/val'  # Zielverzeichnis für die gespeicherten Bilder
-                save_image_from_views(pv_mesh, export_dir, model_name)
+                save_image_from_views(pv_mesh, output_dir, model_name)
 
                 trimesh_mesh, model_name = process_trimesh(obj_file, output_dir)
 

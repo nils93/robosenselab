@@ -2,6 +2,7 @@ import trimesh
 import os
 import pyvista as pv
 import numpy as np
+import csv
 
 from scripts.calculate_camera_positions import calculate_camera_positions
 
@@ -10,9 +11,11 @@ def save_image_from_views(mesh, output_dir, model_name):
     # Liste der Kamerapositionen für die 6 Ansichten
     camera_positions = calculate_camera_positions(mesh)   
     #print(f"Camera positions: {camera_positions}")
+
+    subset = "val"
     
     # Erstelle das Verzeichnis für das Modell, falls nicht vorhanden
-    model_dir = os.path.join(output_dir, model_name)
+    model_dir = os.path.join(output_dir, subset, model_name)
     os.makedirs(model_dir, exist_ok=True)
 
     # Erstelle die PyVista-Scene aus dem Trimesh-Mesh
@@ -50,5 +53,19 @@ def save_image_from_views(mesh, output_dir, model_name):
         # Rendering und Speichern des Bildes
         scene.render()
         scene.screenshot(output_path)  # Speichern des Bildes
+
+        relative_path = os.path.join(subset, model_name, f"{model_name}_{view_name}_view.png")
+        csv_path = os.path.join(output_dir, "labels.csv")
+        append_label_entry(csv_path, relative_path, model_name)
+
+def append_label_entry(csv_path, relative_path, label):
+    header = ["filepath", "label"]
+    file_exists = os.path.isfile(csv_path)
+
+    with open(csv_path, "a", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        if not file_exists:
+            writer.writerow(header)
+        writer.writerow([relative_path, label])
 
 

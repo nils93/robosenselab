@@ -3,7 +3,7 @@ import os
 import pyvista as pv
 import numpy as np
 import random
-
+import csv
 
 def generate_camera_sphere_positions(n_views):
     """Generiert n gleichmäßig verteilte Punkte auf einer Einheitskugel."""
@@ -83,9 +83,26 @@ def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_
 
         output_path = os.path.join(model_dir, f"{model_name}_view_{i:02d}.png")
         plotter.screenshot(output_path)
+
+        # Relativer Pfad für CSV
+        relative_path = os.path.join(subset, model_name, f"{model_name}_view_{i:02d}.png")
+        csv_path = os.path.join(output_dir, "labels.csv")
+        append_label_entry(csv_path, relative_path, model_name)
+
         #print(f"[Gespeichert] {output_path}")
 
         plotter.close()
 
         if progress_bar:
             progress_bar.update(1)
+
+def append_label_entry(csv_path, relative_path, label):
+    header = ["filepath", "label"]
+    file_exists = os.path.isfile(csv_path)
+
+    with open(csv_path, "a", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        if not file_exists:
+            writer.writerow(header)
+        writer.writerow([relative_path, label])
+

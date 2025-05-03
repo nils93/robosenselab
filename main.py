@@ -7,7 +7,7 @@ from scripts.process_all_models import process_all_models
 # Hauptfunktion zum Starten des Prozesses
 def main():
     model_directory = 'data/cad_models/'  # Ersetze dies mit dem Pfad zu deinem Verzeichnis der .obj-Dateien
-    output_dir = './output_images'  # Zielverzeichnis für die gespeicherten Bilder
+    output_dir = './training_data'  # Zielverzeichnis für die gespeicherten Bilder
 
     # Sicherstellen, dass das Zielverzeichnis existiert
     os.makedirs(output_dir, exist_ok=True)

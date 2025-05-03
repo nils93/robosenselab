@@ -21,7 +21,7 @@ def save_image_from_views(mesh, output_dir, model_name):
 
     # Erstelle die PyVista-Scene aus dem Trimesh-Mesh
     scene = pv.Plotter(off_screen=True)
-    scene.add_mesh(mesh)
+    scene.add_mesh(mesh, scalars=None, rgb=True)
 
     # Speichern der Bilder aus jeder Perspektive
     for i, camera_pos in enumerate(camera_positions):
@@ -55,4 +55,4 @@ def save_image_from_views(mesh, output_dir, model_name):
         scene.render()
         scene.screenshot(output_path)  # Speichern des Bildes
 
-        print(f"Bild gespeichert: {output_path}")
+

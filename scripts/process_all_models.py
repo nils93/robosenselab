@@ -1,11 +1,10 @@
-import trimesh
 import os
-import pyvista as pv
-import numpy as np
-
+from tqdm import tqdm  # Importiere tqdm für Fortschrittsanzeige
 from scripts.load_all_obj_models import load_all_obj_models
 from scripts.save_image_from_views import save_image_from_views
 from scripts.move_model_to_origin import move_model_to_origin
+from scripts.ask_for_confirmation import ask_for_confirmation
+from scripts.process_single_model import process_single_model
 
 # Funktion, um alle Modelle zu verarbeiten
 def process_all_models(model_directory, output_dir):
@@ -18,20 +17,18 @@ def process_all_models(model_directory, output_dir):
         print(f"{i}. {model_file}")
 
     # Benutzereingabe zur Bestätigung
-    confirm = input("\nMöchten Sie fortfahren und alle Modelle verarbeiten? (yes/no): ").strip().lower()
+    if ask_for_confirmation():
+        # Fortschrittsanzeige mit tqdm, ohne dass zusätzliche Ausgaben für jedes Modell erfolgen
+        print(f"Verarbeite {len(model_files)} Modelle...")
 
-    if confirm == "yes":
-        for obj_file in model_files:
-            model_name = os.path.basename(obj_file).split('.')[0]  # Modellname ohne Erweiterung
-            print(f"\nVerarbeite Modell: {model_name}")
-
-            # Lade das Modell mit Trimesh
-            mesh = trimesh.load_mesh(obj_file)
-
-            # Verschiebe das Modell in den Ursprung
-            mesh = move_model_to_origin(mesh)
-
-            # Speichern der Bilder für jedes Modell
-            save_image_from_views(mesh, output_dir, model_name)
+        # Iteriere durch die Modelle und aktualisiere die Fortschrittsanzeige
+        for obj_file in tqdm(model_files, desc="Verarbeitung", unit="Modell"):
+            # Verarbeite jedes Modell ohne zusätzliche Konsolenausgaben
+            #process_single_model(obj_file, output_dir)
+            pv_mesh, model_name = process_single_model(obj_file, output_dir)
+            save_image_from_views(pv_mesh, output_dir, model_name)
     else:
         print("Verarbeitung abgebrochen.")
+        return
+    print("Alle Modelle wurden erfolgreich verarbeitet und die Bilder gespeichert.")
+    return

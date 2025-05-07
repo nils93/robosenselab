@@ -13,7 +13,7 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     # Verarbeite alle Modelle im angegebenen Verzeichnis
-    process_all_models(model_directory, output_dir, n_views=2)
+    process_all_models(model_directory, output_dir, n_views=5)
 
 if __name__ == "__main__":
     main()

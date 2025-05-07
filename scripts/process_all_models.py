@@ -29,7 +29,8 @@ def process_all_models(model_directory, output_dir, n_views=50):
         # Filtere Modelle heraus, bei denen Bilder bereits existieren
         models_to_process = [model_file for model_file in model_files if not check_if_images_exist(output_dir, os.path.basename(model_file).split('.')[0])]
 
-        total_images = len(models_to_process) * n_views  # Gesamtbildanzahl
+        n_classic_views = 6  # Anzahl der klassischen Ansichten (vorne, hinten, links, rechts, oben, unten)
+        total_images = len(models_to_process) * (n_classic_views + n_views) # Gesamtbildanzahl
         print(f"{total_images} Bilder werden gespeichert...")
 
         # Fortschrittsanzeige für nur die verarbeiteten Modelle
@@ -43,6 +44,8 @@ def process_all_models(model_directory, output_dir, n_views=50):
                 # Speichern der Bilder für das Modell
                 save_image_from_views(pv_mesh, output_dir, model_name)
 
+                pbar.update(n_classic_views)  # klassische Perspektiven: 6 Bilder
+
                 trimesh_mesh, model_name = process_trimesh(obj_file, output_dir)
 
                 # Speichern der augmentierten Ansichten
@@ -50,7 +53,6 @@ def process_all_models(model_directory, output_dir, n_views=50):
                 
                 # Fortschritt aktualisieren
                 processed_models += 1
-                pbar.update(1)  # Fortschritt aktualisieren
 
         print("Alle Modelle wurden erfolgreich verarbeitet und die Bilder gespeichert.")
     else:

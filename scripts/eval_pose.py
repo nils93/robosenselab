@@ -34,6 +34,7 @@ def eval_pose(image_name="0.png"):
                 [0.0, 0.0, 1.0]])
 
     CLASS_NAMES = sorted([
+        "background",
         "morobot-s_Achse-1A_gray", "morobot-s_Achse-1A_yellow", "morobot-s_Achse-1B_gray", "morobot-s_Achse-1B_yellow",
         "morobot-s_Achse-2A_gray", "morobot-s_Achse-2A_yellow", "morobot-s_Achse-2B_gray", "morobot-s_Achse-2B_yellow",
         "morobot-s_Achse-3A_gray", "morobot-s_Achse-3A_yellow", "morobot-s_Achse-3A-rrr_gray", "morobot-s_Achse-3A-rrr_yellow",
@@ -49,14 +50,14 @@ def eval_pose(image_name="0.png"):
 
     # ======= Transforms =======
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),
+        transforms.Resize((224, 224)),  # <-- hier 224 statt 128!
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)
     ])
 
     # Dummy-Vorschlag: Teile das Bild in Zellen (Grid) und klassifiziere jede
     H, W, _ = rgb.shape
-    step = 128
+    step = 112
     detections = []
 
     for y in range(0, H, step):
@@ -70,10 +71,17 @@ def eval_pose(image_name="0.png"):
 
             with torch.no_grad():
                 class_out, pose_out = model(input_tensor)
-                _, pred = torch.max(class_out, 1)
-
+                probs = torch.softmax(class_out, dim=1)
+                confidence, pred = torch.max(probs, 1)
 
             label = CLASS_NAMES[pred.item()]
+            score = confidence.item()
+            print(f"[{x},{y}] → predicted: {label} (score: {score:.2f})")
+
+
+            # ➤ "background" ignorieren
+            if label == "background":
+                continue
 
             # Werte direkt aus dem Netzwerk
             center = pose_out[0, :3].cpu().numpy().tolist()
@@ -84,15 +92,22 @@ def eval_pose(image_name="0.png"):
                 "label": label,
                 "bbox": [x, y, x + step, y + step],
                 "position": center,
-                "quaternion": quat
+                "quaternion": quat,
+                "confidence": score
             })
 
 
     # ======= Ausgabe =======
     for det in detections:
         x1, y1, x2, y2 = det["bbox"]
+        label = det["label"]
+        score = det["confidence"]
+
         cv2.rectangle(rgb, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.putText(rgb, det["label"], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+        cv2.putText(rgb, f"{label} ({score:.2f})", (x1, y1 - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
+
+
 
     cv2.imshow("Erkennung", rgb)
     cv2.waitKey(1)

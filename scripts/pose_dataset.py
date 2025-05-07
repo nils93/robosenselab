@@ -27,9 +27,17 @@ class PoseDataset(Dataset):
         img_path = os.path.join(self.root_dir, row["filepath"])
         image = Image.open(img_path).convert("RGB")
 
-        label = self.label2idx[row["label"]]
-        translation = torch.tensor([row["tx"], row["ty"], row["tz"]], dtype=torch.float32)
-        quaternion = torch.tensor([row["qx"], row["qy"], row["qz"], row["qw"]], dtype=torch.float32)
+        label_name = row["label"]
+        label = self.label2idx.get(label_name, -1)
+
+        if label_name == "background":
+            # Dummy-Werte für Pose
+            translation = torch.zeros(3, dtype=torch.float32)
+            quaternion = torch.tensor([0, 0, 0, 1], dtype=torch.float32)
+        else:
+            translation = torch.tensor([row["tx"], row["ty"], row["tz"]], dtype=torch.float32)
+            quaternion = torch.tensor([row["qx"], row["qy"], row["qz"], row["qw"]], dtype=torch.float32)
+
 
         if self.transform:
             image = self.transform(image)

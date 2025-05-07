@@ -1,8 +1,10 @@
 import os
+import shutil
 from tqdm import tqdm  # Importiere tqdm für Fortschrittsanzeige
 from scripts.load_all_obj_models import load_all_obj_models
 from scripts.ask_for_confirmation import ask_for_confirmation
 from scripts.check_if_images_exist import check_if_images_exist
+from scripts.count_augmented_images import count_augmented_images
 from scripts.process_pv_mesh import process_pv_mesh
 from scripts.process_trimesh import process_trimesh
 from scripts.save_image_from_views import save_image_from_views
@@ -18,43 +20,53 @@ def process_all_models(model_directory, output_dir, n_views=50):
     for i, model_file in enumerate(model_files, 1):
         print(f"{i}. {model_file}")
 
-    # Benutzereingabe zur Bestätigung
-    if ask_for_confirmation():
-        # Fortschrittsanzeige mit tqdm, ohne dass zusätzliche Ausgaben für jedes Modell erfolgen
-        print(f"Verarbeite {len(model_files)} Modelle...")
+    # Benutzerabfrage: Alles neu oder nur augmentierte Bilder ergänzen?
+    print("\nOptionen:")
+    print("[1] Alles neu erstellen (löscht train/, val/ und labels.csv)")
+    print("[2] Nur augmentierte Bilder hinzufügen (bestehende Daten bleiben erhalten)")
+    choice = input("Bitte Auswahl eingeben [1/2]: ").strip()
 
-        # Zähler für die verarbeiteten Modelle
-        processed_models = 0
-
-        # Filtere Modelle heraus, bei denen Bilder bereits existieren
-        models_to_process = [model_file for model_file in model_files if not check_if_images_exist(output_dir, os.path.basename(model_file).split('.')[0])]
-
-        n_classic_views = 6  # Anzahl der klassischen Ansichten (vorne, hinten, links, rechts, oben, unten)
-        total_images = len(models_to_process) * (n_classic_views + n_views) # Gesamtbildanzahl
-        print(f"{total_images} Bilder werden gespeichert...")
-
-        # Fortschrittsanzeige für nur die verarbeiteten Modelle
-        with tqdm(total=total_images, desc="Gesamtfortschritt", unit="Bild") as pbar:
-            for obj_file in models_to_process:
-                model_name = os.path.basename(obj_file).split('.')[0]  # Modellname ohne Erweiterung
-
-                # Verarbeite jedes Modell und erhalte das mesh und den model_name
-                pv_mesh, model_name = process_pv_mesh(obj_file, output_dir)
-                
-                # Speichern der Bilder für das Modell
-                save_image_from_views(pv_mesh, output_dir, model_name)
-
-                pbar.update(n_classic_views)  # klassische Perspektiven: 6 Bilder
-
-                trimesh_mesh, model_name = process_trimesh(obj_file, output_dir)
-
-                # Speichern der augmentierten Ansichten
-                save_augmented_views(trimesh_mesh, output_dir, model_name, n_views=n_views, progress_bar=pbar, split_ratio=0.8)
-                
-                # Fortschritt aktualisieren
-                processed_models += 1
-
-        print("Alle Modelle wurden erfolgreich verarbeitet und die Bilder gespeichert.")
+    if choice == "1":
+        print("→ Vorhandene Daten werden gelöscht...")
+        for subfolder in ["train", "val"]:
+            subfolder_path = os.path.join(output_dir, subfolder)
+            if os.path.exists(subfolder_path):
+                shutil.rmtree(subfolder_path)
+        csv_path = os.path.join(output_dir, "labels.csv")
+        if os.path.exists(csv_path):
+            os.remove(csv_path)
+        generate_classic = True
+        print("→ Vorhandene Daten wurden erfolgreich gelöscht!")
+    elif choice == "2":
+        print("→ Es werden nur augmentierte Ansichten ergänzt.")
+        generate_classic = False
     else:
-        print("Verarbeitung abgebrochen.")
+        print("Ungültige Eingabe. Verarbeitung abgebrochen.")
         return
+
+    total_images = len(model_files) * (n_views + (6 if generate_classic else 0))
+    print(f"\n{total_images} Bilder werden verarbeitet...\n")
+
+    with tqdm(total=total_images, desc="Gesamtfortschritt", unit="Bild") as pbar:
+        for obj_file in model_files:
+            model_name = os.path.splitext(os.path.basename(obj_file))[0]
+
+            if generate_classic:
+                pv_mesh, _ = process_pv_mesh(obj_file, output_dir)
+                num_saved = save_image_from_views(pv_mesh, output_dir, model_name)
+                pbar.update(num_saved)
+
+            trimesh_mesh, _ = process_trimesh(obj_file, output_dir)
+            start_index = count_augmented_images(output_dir, model_name)
+
+            save_augmented_views(
+                trimesh_mesh,
+                output_dir,
+                model_name,
+                n_views=n_views,
+                progress_bar=pbar,
+                split_ratio=0.8,
+                start_index=start_index
+            )
+
+    print("\n✅ Alle Modelle wurden erfolgreich verarbeitet.")

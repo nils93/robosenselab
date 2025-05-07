@@ -5,17 +5,10 @@ import numpy as np
 import random
 import csv
 
-def generate_camera_sphere_positions(n_views):
-    """Generiert n gleichmäßig verteilte Punkte auf einer Einheitskugel."""
-    indices = np.arange(0, n_views, dtype=float) + 0.5
-    phi = np.arccos(1 - 2*indices/n_views)
-    theta = np.pi * (1 + 5**0.5) * indices
-    x = np.sin(phi) * np.cos(theta)
-    y = np.sin(phi) * np.sin(theta)
-    z = np.cos(phi)
-    return np.vstack((x, y, z)).T  # shape: (n_views, 3)
+from scripts.append_label_entry import append_label_entry
+from scripts.generate_camera_sphere_positions import generate_camera_sphere_positions
 
-def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_rotation=True, progress_bar=None, split_ratio=0.8):
+def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_rotation=True, progress_bar=None, split_ratio=0.8, start_index=0):
     """
     Rendert n Bilder eines CAD-Modells aus verschiedenen Perspektiven mit optionaler Zufallsrotation.
     Die Bilder werden zufällig auf train/val verteilt.
@@ -75,17 +68,22 @@ def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_
 
         plotter.camera_position = [cam_pos.tolist(), center.tolist(), up.tolist()]
         plotter.camera.zoom(0.9)  # z.B. 90 % Zoom = mehr Abstand
-        plotter.render()
+        #plotter.render()
 
+        # Verzeichnis und Nummerierung
         subset = "train" if random.random() < split_ratio else "val"
         model_dir = os.path.join(output_dir, subset, model_name)
         os.makedirs(model_dir, exist_ok=True)
 
-        output_path = os.path.join(model_dir, f"{model_name}_view_{i:02d}.png")
+        index = start_index + i
+        filename = f"{model_name}_view_{index:04d}.png"
+        output_path = os.path.join(model_dir, filename)
+
         plotter.screenshot(output_path)
+        plotter.close()
 
         # Relativer Pfad für CSV
-        relative_path = os.path.join(subset, model_name, f"{model_name}_view_{i:02d}.png")
+        relative_path = os.path.join(subset, model_name, filename)
         csv_path = os.path.join(output_dir, "labels.csv")
         append_label_entry(csv_path, relative_path, model_name)
 
@@ -95,14 +93,4 @@ def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_
 
         if progress_bar:
             progress_bar.update(1)
-
-def append_label_entry(csv_path, relative_path, label):
-    header = ["filepath", "label"]
-    file_exists = os.path.isfile(csv_path)
-
-    with open(csv_path, "a", newline="") as csvfile:
-        writer = csv.writer(csvfile)
-        if not file_exists:
-            writer.writerow(header)
-        writer.writerow([relative_path, label])
 

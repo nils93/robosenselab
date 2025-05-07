@@ -11,5 +11,6 @@ __init__.py
 *.obj
 *.jpg
 *.jpeg
+*.pt
 
 

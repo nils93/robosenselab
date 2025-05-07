@@ -7,6 +7,9 @@ import csv
 
 from scripts.append_label_entry import append_label_entry
 from scripts.generate_camera_sphere_positions import generate_camera_sphere_positions
+from scripts.append_pose_label_entry import append_pose_label_entry
+from scripts.camera_to_quaternion import camera_to_quaternion
+from scripts.append_pose_quaternion_entry import append_pose_quaternion_entry
 
 def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_rotation=True, progress_bar=None, split_ratio=0.8, start_index=0):
     """
@@ -39,58 +42,52 @@ def save_augmented_views(mesh, output_dir, model_name, n_views=20, apply_random_
     camera_positions = directions * radius + center
 
     for i, cam_pos in enumerate(camera_positions):
-        # Neuer Plotter für jede Ansicht (vermeidet Persistenzprobleme)
-        plotter = pv.Plotter(off_screen=True)
-        plotter.set_background("white")
-        plotter.window_size = [512, 512]
+        plotter = None  # wichtig: existiert auch im finally-Block
 
-        # Konvertiere Trimesh zu PyVista PolyData
-        pv_mesh = pv.wrap(mesh_copy)
+        try:
+            plotter = pv.Plotter(off_screen=True)
+            plotter.set_background("white")
+            plotter.window_size = [512, 512]
 
-        # Prüfe, ob Farben existieren
-        if hasattr(mesh_copy.visual, "vertex_colors") and mesh_copy.visual.vertex_colors is not None:
-            colors = mesh_copy.visual.vertex_colors
-            # Trimesh gibt Farben als uint8, PyVista will float32 [0,1]
-            if colors.max() > 1.0:
-                colors = colors / 255.0
-            # Setze Farben als Punktdaten
-            pv_mesh.point_data["colors"] = colors[:, :3]  # RGB (ignoriere Alpha)
-            plotter.add_mesh(pv_mesh, scalars="colors", rgb=True)
-        else:
-            plotter.add_mesh(pv_mesh, color="lightgray")
+            pv_mesh = pv.wrap(mesh_copy)
 
+            if hasattr(mesh_copy.visual, "vertex_colors") and mesh_copy.visual.vertex_colors is not None:
+                colors = mesh_copy.visual.vertex_colors
+                if colors.max() > 1.0:
+                    colors = colors / 255.0
+                pv_mesh.point_data["colors"] = colors[:, :3]
+                plotter.add_mesh(pv_mesh, scalars="colors", rgb=True)
+            else:
+                plotter.add_mesh(pv_mesh, color="lightgray")
 
-        # Dynamischer "up"-Vektor (falls Kamera direkt über/unter dem Modell ist)
-        view_dir = np.array(center) - cam_pos
-        up = np.array([0, 0, 1])
-        if np.abs(np.dot(view_dir/np.linalg.norm(view_dir), up)) > 0.99:
-            up = np.array([0, 1, 0])  # vermeidet degenerierten Up-Vektor
+            view_dir = np.array(center) - cam_pos
+            up = np.array([0, 0, 1])
+            if np.abs(np.dot(view_dir / np.linalg.norm(view_dir), up)) > 0.99:
+                up = np.array([0, 1, 0])
 
-        plotter.camera_position = [cam_pos.tolist(), center.tolist(), up.tolist()]
-        plotter.camera.zoom(0.9)  # z.B. 90 % Zoom = mehr Abstand
-        #plotter.render()
+            plotter.camera_position = [cam_pos.tolist(), center.tolist(), up.tolist()]
+            plotter.camera.zoom(0.9)
 
-        # Verzeichnis und Nummerierung
-        subset = "train" if random.random() < split_ratio else "val"
-        model_dir = os.path.join(output_dir, subset, model_name)
-        os.makedirs(model_dir, exist_ok=True)
+            subset = "train" if random.random() < split_ratio else "val"
+            model_dir = os.path.join(output_dir, subset, model_name)
+            os.makedirs(model_dir, exist_ok=True)
 
-        index = start_index + i
-        filename = f"{model_name}_view_{index:04d}.png"
-        output_path = os.path.join(model_dir, filename)
+            index = start_index + i
+            filename = f"{model_name}_view_{index:04d}.png"
+            output_path = os.path.join(model_dir, filename)
 
-        plotter.screenshot(output_path)
-        plotter.close()
+            plotter.screenshot(output_path)
 
-        # Relativer Pfad für CSV
-        relative_path = os.path.join(subset, model_name, filename)
-        csv_path = os.path.join(output_dir, "labels.csv")
-        append_label_entry(csv_path, relative_path, model_name)
+            relative_path = os.path.join(subset, model_name, filename)
+            csv_path = os.path.join(output_dir, "pose_labels.csv")
+            quat = camera_to_quaternion(cam_pos, center, up)
+            append_pose_quaternion_entry(csv_path, relative_path, model_name, cam_pos.tolist(), quat.tolist())
 
-        #print(f"[Gespeichert] {output_path}")
+            if progress_bar:
+                progress_bar.update(1)
 
-        plotter.close()
+        finally:
+            if plotter:
+                plotter.close()
 
-        if progress_bar:
-            progress_bar.update(1)
 

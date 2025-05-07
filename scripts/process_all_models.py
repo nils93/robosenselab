@@ -1,6 +1,8 @@
 import os
 import shutil
-from tqdm import tqdm  # Importiere tqdm für Fortschrittsanzeige
+import time
+from tqdm import tqdm
+from multiprocessing import Pool, cpu_count
 from scripts.load_all_obj_models import load_all_obj_models
 from scripts.ask_for_confirmation import ask_for_confirmation
 from scripts.check_if_images_exist import check_if_images_exist
@@ -9,25 +11,23 @@ from scripts.process_pv_mesh import process_pv_mesh
 from scripts.process_trimesh import process_trimesh
 from scripts.save_image_from_views import save_image_from_views
 from scripts.save_augmented_views import save_augmented_views
+from scripts.process_single_model_wrapper import process_single_model_wrapper
+from scripts.print_duration import print_duration
 
-# Funktion, um alle Modelle zu verarbeiten
 def process_all_models(model_directory, output_dir, n_views=50):
-    # Lade alle .obj-Modelle im angegebenen Verzeichnis
     model_files = load_all_obj_models(model_directory)
 
-    # Zeige die aufgelisteten Modelle und frage nach Bestätigung
-    print("Die folgenden CAD-Modelle wurden gefunden:")
+    print("🔍 Die folgenden CAD-Modelle wurden gefunden:")
     for i, model_file in enumerate(model_files, 1):
-        print(f"{i}. {model_file}")
+        print(f"  {i:2d}. {model_file}")
 
-    # Benutzerabfrage: Alles neu oder nur augmentierte Bilder ergänzen?
-    print("\nOptionen:")
+    print("\n⚙️  Optionen:")
     print("[1] Alles neu erstellen (löscht train/, val/ und labels.csv)")
     print("[2] Nur augmentierte Bilder hinzufügen (bestehende Daten bleiben erhalten)")
     choice = input("Bitte Auswahl eingeben [1/2]: ").strip()
 
     if choice == "1":
-        print("→ Vorhandene Daten werden gelöscht...")
+        print("🗑️  Vorhandene Daten werden gelöscht...")
         for subfolder in ["train", "val"]:
             subfolder_path = os.path.join(output_dir, subfolder)
             if os.path.exists(subfolder_path):
@@ -36,37 +36,43 @@ def process_all_models(model_directory, output_dir, n_views=50):
         if os.path.exists(csv_path):
             os.remove(csv_path)
         generate_classic = True
-        print("→ Vorhandene Daten wurden erfolgreich gelöscht!")
+        print("✅ Ordner und CSV wurden erfolgreich entfernt.")
     elif choice == "2":
-        print("→ Es werden nur augmentierte Ansichten ergänzt.")
+        print("🔄 Es werden nur augmentierte Ansichten ergänzt.")
         generate_classic = False
     else:
-        print("Ungültige Eingabe. Verarbeitung abgebrochen.")
+        print("❌ Ungültige Eingabe. Verarbeitung abgebrochen.")
         return
 
+    available_cores = cpu_count()
+    print(f"\n🧠 Dein System hat {available_cores} logische CPU-Kerne.")
+
+    while True:
+        try:
+            user_cores = int(input(f"💡 Wie viele Kerne sollen verwendet werden? [1-{available_cores}]: ").strip())
+            if 1 <= user_cores <= available_cores:
+                break
+            else:
+                print("❌ Ungültige Eingabe. Bitte gib eine Zahl im gültigen Bereich ein.")
+        except ValueError:
+            print("❌ Bitte eine ganze Zahl eingeben.")
+
     total_images = len(model_files) * (n_views + (6 if generate_classic else 0))
-    print(f"\n{total_images} Bilder werden verarbeitet...\n")
+    print(f"\n🚀 Starte Verarbeitung mit {user_cores} Kern(en)...")
+    print(f"📦 Anzahl der Modelle: {len(model_files)}")
+    print(f"🖼️  Ansichten pro Modell: {n_views} augmentiert + {'6 klassisch' if generate_classic else '0 klassisch'}")
+    print(f"📊 Erwartete Gesamtbilder: {total_images}\n")
 
-    with tqdm(total=total_images, desc="Gesamtfortschritt", unit="Bild") as pbar:
-        for obj_file in model_files:
-            model_name = os.path.splitext(os.path.basename(obj_file))[0]
+    tasks = [(obj_file, output_dir, n_views, generate_classic) for obj_file in model_files]
+    start_time = time.time()
+    with Pool(processes=user_cores) as pool:
+        with tqdm(total=total_images, desc="Gesamtfortschritt", unit="Bild", dynamic_ncols=True, smoothing=0.1) as pbar:
+            for completed_images in pool.imap_unordered(process_single_model_wrapper, tasks, chunksize=1):
+                pbar.update(completed_images)
 
-            if generate_classic:
-                pv_mesh, _ = process_pv_mesh(obj_file, output_dir)
-                num_saved = save_image_from_views(pv_mesh, output_dir, model_name)
-                pbar.update(num_saved)
-
-            trimesh_mesh, _ = process_trimesh(obj_file, output_dir)
-            start_index = count_augmented_images(output_dir, model_name)
-
-            save_augmented_views(
-                trimesh_mesh,
-                output_dir,
-                model_name,
-                n_views=n_views,
-                progress_bar=pbar,
-                split_ratio=0.8,
-                start_index=start_index
-            )
+    duration = time.time() - start_time
+    minutes = int(duration // 60)
+    seconds = int(duration % 60)
 
     print("\n✅ Alle Modelle wurden erfolgreich verarbeitet.")
+    print_duration(start_time, len(model_files), total_images)

@@ -1,0 +1,18 @@
+# Ignoriere nachstehende Verzeichnisse
+ungültig/
+learnings/
+__pycache__
+
+__init__.py
+
+# Ignoriere nachstehende Datentypen
+*.png
+*.stl
+*.ply
+*.obj
+*.jpg
+*.jpeg
+*.pt
+*.csv
+
+

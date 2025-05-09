@@ -1,5 +1,6 @@
 # Ignoriere nachstehende Verzeichnisse
 ungültig/
+learnings/
 __pycache__
 
 __init__.py
@@ -12,5 +13,6 @@ __init__.py
 *.jpg
 *.jpeg
 *.pt
+*.csv
 
 

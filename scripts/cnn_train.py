@@ -36,19 +36,25 @@ def train_cnn():
     val_set = PoseDataset(df=val_df, root_dir=data_dir, transform=transform)
 
     cpu_count = os.cpu_count() or 2  # fallback
+
+    num_workers = cpu_count // 2 if torch.cuda.is_available() else 0
+    pin_memory = torch.cuda.is_available()
+
     train_loader = DataLoader(
         train_set,
-        batch_size=32,  # falls dein GPU-RAM es erlaubt
+        batch_size=32,
         shuffle=True,
-        num_workers=cpu_count // 2,
-        pin_memory=True
+        num_workers=num_workers,
+        pin_memory=pin_memory
     )
+
     val_loader = DataLoader(
         val_set,
         batch_size=32,
-        num_workers=cpu_count // 2,
-        pin_memory=True
+        num_workers=num_workers,
+        pin_memory=pin_memory
     )
+
 
 
     # ===== 3. Modell initialisieren oder laden =====
@@ -57,7 +63,8 @@ def train_cnn():
     model_path = "cnn_pose_model.pt"
 
     if os.path.exists(model_path):
-        model.load_state_dict(torch.load(model_path))
+        #model.load_state_dict(torch.load(model_path)) 
+        model.load_state_dict(torch.load(model_path, map_location=device))
         print("📥 Vortrainiertes Modell geladen – Training wird fortgesetzt.")
     else:
         print("🆕 Neues Modell wird initialisiert.")
@@ -72,7 +79,9 @@ def train_cnn():
     criterion_class = nn.CrossEntropyLoss(weight=class_weights.to(device))
     criterion_pose = nn.MSELoss(reduction="none")
     optimizer = optim.Adam(model.parameters(), lr=0.001)
-    scaler = GradScaler("cuda")  # für mixed precision
+    #scaler = GradScaler("cuda")  # für mixed precision
+    scaler = GradScaler(enabled=torch.cuda.is_available())
+
 
     # ===== 5. Training =====
     num_epochs = 50
@@ -92,7 +101,9 @@ def train_cnn():
             is_fg = (labels != train_set.label2idx["background"]).float().unsqueeze(1)  # [B,1]
             optimizer.zero_grad()
             
-            with autocast("cuda"):
+            #with autocast("cuda"):
+            with autocast(device_type="cuda", enabled=torch.cuda.is_available()):
+
                 class_out, pose_out = model(images)
                 loss_class = criterion_class(class_out, labels)
                 loss_pose_xyz = criterion_pose(pose_out[:, :3], translations) * is_fg
@@ -123,7 +134,8 @@ def train_cnn():
 
                 is_fg = (labels != val_set.label2idx["background"]).float().unsqueeze(1)
 
-                with autocast("cuda"):
+                #with autocast("cuda"):
+                with autocast(device_type="cuda", enabled=torch.cuda.is_available()):
                     class_out, pose_out = model(images)
                     loss_class = criterion_class(class_out, labels)
                     loss_pose_xyz = criterion_pose(pose_out[:, :3], translations) * is_fg

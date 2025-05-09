@@ -20,7 +20,7 @@ def main():
             model_directory = 'data/cad_models/'
             output_dir = 'data/'
             os.makedirs(output_dir, exist_ok=True)
-            process_all_models(model_directory, output_dir, n_views=90)
+            process_all_models(model_directory, output_dir, n_views=5)
 
         elif choice == "2":
             from scripts.generate_backgrounds import generate_backgrounds

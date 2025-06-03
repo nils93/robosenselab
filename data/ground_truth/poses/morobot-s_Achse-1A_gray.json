@@ -1,0 +1,86 @@
+{
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_front_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            0.0,
+            0.0,
+            -252.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ]
+    },
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_back_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            0.0,
+            0.0,
+            252.0
+        ],
+        "rotation": [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+        ]
+    },
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_left_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            -252.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            0.0,
+            0.7071067811865475,
+            0.0,
+            0.7071067811865475
+        ]
+    },
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_right_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            252.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            0.0,
+            0.7071067811865475,
+            0.0,
+            -0.7071067811865475
+        ]
+    },
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_top_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            0.0,
+            252.0,
+            0.0
+        ],
+        "rotation": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            0.7071067811865475
+        ]
+    },
+    "morobot-s_Achse-1A_gray/morobot-s_Achse-1A_gray_bottom_view.png": {
+        "model": "morobot-s_Achse-1A_gray",
+        "translation": [
+            0.0,
+            -252.0,
+            0.0
+        ],
+        "rotation": [
+            0.7071067811865475,
+            0.0,
+            0.0,
+            -0.7071067811865475
+        ]
+    }
+}

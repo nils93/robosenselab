@@ -1,6 +1,12 @@
 # Ignoriere nachstehende Verzeichnisse
 ungültig/
 learnings/
+outputs/
+yolo/
+cosypose/
+PoseCNN/
+
+
 __pycache__
 
 __init__.py
@@ -14,5 +20,6 @@ __init__.py
 *.jpeg
 *.pt
 *.csv
+*.pt
 
 

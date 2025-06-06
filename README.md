@@ -17,7 +17,7 @@ cd yolo && git submodule update --init --recursive
 
 ### 3. meggapose6d als submodule (im Hauptverzeichnis) einbinden
 ```bash
-git submodule https://github.com/megapose6d/megapose6d megapose6d
+git submodule add https://github.com/megapose6d/megapose6d megapose6d
 cd megapose6d && git submodule update --init
 ```
 

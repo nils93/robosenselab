@@ -1,0 +1,28 @@
+name: robosenselab
+channels:
+   - conda-forge
+   - pytorch
+   - anaconda
+   - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - wget
+  - python-wget
+  - joblib
+  - pytorch==1.11.0
+  - torchvision==0.12.0
+  - cudatoolkit==11.3.1
+  - ipython
+  - ipykernel
+  - jupyterlab
+  - notebook<7
+  - nb_conda_kernels
+  - jupyter_contrib_nbextensions
+  - pinocchio
+  - rclone
+  - pillow
+  - ipywidgets
+  - selenium
+  - geckodriver
+  - firefox

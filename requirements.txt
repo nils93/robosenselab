@@ -1,12 +1,47 @@
-sudo apt-get install libgl1-mesa-glx
-sudo apt-get install libxcb-xinerama0
-pip install matplotlib
-sudo apt-get install xvfb
-pip install trimesh
-pip install pyglet
-pip install opencv-python
-pip install pyvista
-
+meshcat
+testresources
+typing-extensions==4.13.2
+selenium
+omegaconf
+simplejson
+line_profiler 
+opencv-python
+torchnet
+tqdm
+lxml
+transforms3d
+panda3d
+joblib
+xarray 
+pandas
+matplotlib
+bokeh
+plyfile 
+trimesh 
+ipdb 
+panda3d-gltf
+colorama
+pyyaml
+ipykernel
+scipy
+pypng
+h5py 
+seaborn
+kornia 
+pyarrow 
+dt_apriltags 
+open3d
+structlog
+imageio
+progressbar
+psutil
+webdataset
+opencv-contrib-python 
+roma 
+torchgeometry
+ultralytics==8.3.146
+pyvista
+pyglet
 
 
 

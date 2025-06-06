@@ -28,5 +28,10 @@ robosenselab/data/val/labels/*
 *.jpeg
 *.pt
 *.csv
+*.cache
 
+# macOS
+.DS_Store
 
+# Windows Zone.Identifier
+*.Zone.Identifier

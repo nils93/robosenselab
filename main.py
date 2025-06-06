@@ -13,20 +13,16 @@ def main():
     print("1. Kamera kalibrieren")
     print("2. Yolo trainieren")
     print("3. Pipeline starten")
-    print("4. Results zusammenführen")
 
     choice = input("\n Bitte wähle eine Option! ").strip()
 
     if choice == "1":
-        
         calibrate_camera()
 
     elif choice == "2":
-        
         train_yolo()
 
     elif choice == "3":
-        
         print("Starte Pipeline...")
 
         # Kamera-Kalibrierung prüfen
@@ -43,10 +39,8 @@ def main():
         input("Drücke Enter, um die YOLO results für megapose6d vorzubereiten...")
 
         # Vorbereitung für Megapose
-        
         example_name = "morobot"
         prepare_megapose(example_name)
-        
 
         inputs_dir = Path("megapose6d/local_data/examples/morobot/inputs")
         meshes_dir = Path("megapose6d/local_data/examples/morobot/meshes")
@@ -83,14 +77,11 @@ def main():
                 print(message)
             if cmd:
                 subprocess.run(cmd, check=True)
-        print("▶️ Führe Ergbenisse zusammen...")
+        print("▶️ Führe Ergebnisse zusammen...")
         
         merge_results("morobot")
         print("✅ Pipeline erfolgreich abgeschlossen.")
-
-    elif choice == "4":
-        print("▶️ Führe Ergbenisse zusammen...")
-        merge_results("morobot")
+        print("Die Ergebnisse findest du in 'outputs/results/'.")
 
     else:
         print("❌ Ungültige Eingabe.")

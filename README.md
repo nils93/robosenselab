@@ -62,3 +62,4 @@ python -m megapose.scripts.run_infer_on morobot --vis-outputs
 python -m megapose.scripts.run_infer_on morobot --draw-pose-bbox
 ```
 Die outputs finden man unter megapose6d/local_data/examples/morobot
+

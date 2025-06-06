@@ -1,5 +1,4 @@
-# Standardbibliotheken
-import argparse
+# Standardbibliothekenimport argparse
 import json
 import os
 from pathlib import Path

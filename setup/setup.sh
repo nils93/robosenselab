@@ -18,7 +18,6 @@ fi
 # 2. Verzeichnisse erstellen
 echo "📁 Erstelle Verzeichnisse für MegaPose..."
 mkdir -p \
-  "$ROOT_DIR/megapose6d/local_data/examples" \
   "$ROOT_DIR/megapose6d/local_data/examples/morobot" \
   "$ROOT_DIR/megapose6d/local_data/examples/morobot/inputs" \
   "$ROOT_DIR/megapose6d/local_data/examples/morobot/meshes"

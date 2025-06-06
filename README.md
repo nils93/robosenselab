@@ -1,5 +1,10 @@
 # robosenselab
 
+## 0. GitRepo klonen
+```bash
+git clone https://github.com/nils93/robosenselab.git robosenselab && cd robosenselab
+```
+
 ## 1. Conda Environment erstellen
 Hinweis: Dieser Schritt nimmt ca. 10 Minuten in Anspruch.
 ```bash
@@ -62,3 +67,4 @@ python -m megapose.scripts.run_infer_on morobot --vis-outputs
 python -m megapose.scripts.run_infer_on morobot --draw-pose-bbox
 ```
 Die outputs finden man unter megapose6d/local_data/examples/morobot
+

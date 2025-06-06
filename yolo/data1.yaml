@@ -1,8 +1,0 @@
-train: ../data/train
-val: ../data/val
-nc: 4
-names:
-  - morobot-s_Achse-1A_gray
-  - morobot-s_Achse-1A_yellow
-  - morobot-s_Achse-1B_yellow
-  - morobot-s_Achse-3B_gray

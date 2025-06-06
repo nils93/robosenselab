@@ -2,8 +2,6 @@
 archiv/
 scripts/ungültig/
 outputs/
-yolo/
-megapose6d/
 __pycache__
 
 # Ignoriere alle Inhalte im Ordner

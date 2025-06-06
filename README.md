@@ -1,5 +1,10 @@
 # robosenselab
 
+## 0. GitRepo klonen
+```bash
+git clone https://github.com/nils93/robosenselab.git robosenselab && cd robosenselab
+```
+
 ## 1. Conda Environment erstellen
 Hinweis: Dieser Schritt nimmt ca. 10 Minuten in Anspruch.
 ```bash

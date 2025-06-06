@@ -50,6 +50,17 @@ Dieser Ordner wird aus lizenzrechtlichen Gründen separat zur Verfügung gestell
 python main.py
 ```
 
+### I. Kalibriere Kamera -> Eingabe 1
+
+### II. Trainiere YOLO -> Eingabe 2
+
+### III. Starte die Pipeline (YOLO + megapose6d) -> Eingabe 3
+
+### IV. Results liegen unter outputs/result
+
+
+---
+
 
 # Übersicht der MegaPose-Befehle
 

@@ -1,6 +1,6 @@
-[submodule "yolo/ultralytics"]
-	path = yolo/ultralytics
-	url = https://github.com/ultralytics/ultralytics
-[submodule "megapose6d2"]
-	path = megapose6d2
+[submodule "megapose6d"]
+	path = megapose6d
 	url = https://github.com/megapose6d/megapose6d
+[submodule "yolo"]
+	path = yolo
+	url = https://github.com/ultralytics/ultralytics

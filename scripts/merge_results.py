@@ -2,6 +2,33 @@ import shutil
 from pathlib import Path
 
 def merge_results(example_name: str):
+    """
+    Führt Ergebnisdaten aus verschiedenen Verzeichnissen (YOLO, MegaPose) für ein Beispiel zusammen.
+
+    Strukturierte Ausgabe erfolgt im Ordner: outputs/results/<bildname>/
+
+    Für jedes Bild wird ein Ordner angelegt, der folgende Dateien enthalten kann:
+    - original.jpg/png           → Originalbild aus inputs/
+    - detection_overlay.jpg/png → YOLO-Ergebnisbild mit Bounding Boxes
+    - pose.json                  → Posen der erkannten Objekte
+    - <Visualisierungen>        → Falls vorhanden, gesamte Visualisierung aus MegaPose
+
+    Parameter:
+    ----------
+    example_name : str
+        Name des Beispielordners unter `megapose6d/local_data/examples/<example_name>`
+
+    Voraussetzungen:
+    - MegaPose-Ergebnisse unter:      megapose6d/local_data/examples/<example_name>/outputs/
+    - Visualisierungen unter:        megapose6d/local_data/examples/<example_name>/visualizations/
+    - Eingabebilder unter:           megapose6d/local_data/examples/<example_name>/inputs/
+    - YOLO-Inferenzbilder unter:     outputs/yolo_runs/infer_run_long/
+    - Zielordner:                    outputs/results/
+
+    Hinweise:
+    - Bestehende Zielordner werden nicht überschrieben.
+    - Unterstützt .jpg und .png als Bildformate.
+    """
     base_path = Path("megapose6d/local_data/examples") / example_name
     inputs_dir = base_path / "inputs"
     visualizations_dir = base_path / "visualizations"
@@ -26,7 +53,6 @@ def merge_results(example_name: str):
     for img_path in inputs_dir.glob("*.[jp][pn]g"):
         target_dir = results_dir / img_path.stem
         target_dir.mkdir(parents=True, exist_ok=True)
-
         target_path = target_dir / f"original{img_path.suffix}"
         shutil.copy(img_path, target_path)
 
@@ -34,7 +60,6 @@ def merge_results(example_name: str):
     for img_path in yolo_dir.glob("*.[jp][pn]g"):
         target_dir = results_dir / img_path.stem
         target_dir.mkdir(parents=True, exist_ok=True)
-
         target_path = target_dir / f"detection_overlay{img_path.suffix}"
         shutil.copy(img_path, target_path)
 
@@ -43,7 +68,6 @@ def merge_results(example_name: str):
         stem = pose_path.stem.replace("_pose", "")
         target_dir = results_dir / stem
         target_dir.mkdir(parents=True, exist_ok=True)
-
         target_path = target_dir / "pose.json"
         shutil.copy(pose_path, target_path)
 

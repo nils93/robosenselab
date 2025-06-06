@@ -21,7 +21,7 @@ git submodule update --init --recursive
 
 ## 3. Pre-trained Pose-Estimation-Modelle herunterladen
 Anmerkung: mit wget wird der SSL-Fehler ignoriert.  
-Downloadgröße: 2,2Gb in 14m 41s (2,53 MB/s)
+Downloadgröße: 2,2 GB in 14m 41s (2,53 MB/s)
 ```bash
 wget -r -np -nH --cut-dirs=3 --no-check-certificate https://www.paris.inria.fr/archive_ylabbeprojectsdata/megapose/megapose-models/ -P megapose6d/local_data/megapose-models
 ```
@@ -49,6 +49,17 @@ Dieser Ordner wird aus lizenzrechtlichen Gründen separat zur Verfügung gestell
 ```bash
 python main.py
 ```
+
+### I. Kalibriere Kamera -> Eingabe `1`
+
+### II. Trainiere YOLO -> Eingabe `2`
+
+### III. Starte die Pipeline (YOLO + megapose6d) -> Eingabe `3`
+
+### IV. Ergebnisse liegen unter `outputs/results`
+
+
+---
 
 
 # Übersicht der MegaPose-Befehle

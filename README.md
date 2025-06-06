@@ -21,6 +21,7 @@ git submodule update --init --recursive
 
 ## 3. Pre-trained Pose-Estimation-Modelle herunterladen
 Anmerkung: mit wget wird der SSL-Fehler ignoriert.
+2,2G in 14m 41s (2,53 MB/s)
 ```bash
 wget -r -np -nH --cut-dirs=3 --no-check-certificate https://www.paris.inria.fr/archive_ylabbeprojectsdata/megapose/megapose-models/ -P megapose6d/local_data/megapose-models
 ```

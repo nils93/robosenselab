@@ -28,7 +28,7 @@ wget -r -np -nH --cut-dirs=3 --no-check-certificate https://www.paris.inria.fr/a
 
 ## 4. `megapose6d` als Python-Modul verlinken
 ```bash
-python -m pip install -e .
+python -m pip install -e ./megapose6d
 ```
 
 ## 5. Beispieldaten herunterladen (optional)

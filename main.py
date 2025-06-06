@@ -6,6 +6,7 @@ from scripts.camera_calibration import calibrate_camera
 from scripts.train_yolo import train_yolo
 from scripts.predict_yolo import predict_yolo
 from scripts.prepare_megapose import prepare_megapose
+
 from pathlib import Path
 
 def main():

@@ -56,7 +56,7 @@ python main.py
 
 ### III. Starte die Pipeline (YOLO + megapose6d) -> Eingabe 3
 
-### IV. Results liegen unter outputs/result
+### IV. Results liegen unter outputs/results
 
 
 ---

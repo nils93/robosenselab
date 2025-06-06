@@ -1,16 +1,23 @@
 # Ignoriere nachstehende Verzeichnisse
 archiv/
-ungültig/
-learnings/
+scripts/ungültig/
 outputs/
 yolo/
 megapose6d/
-
-
-
 __pycache__
 
-__init__.py
+# Ignoriere alle Inhalte im Ordner
+robosenselab/data/train/images/*
+robosenselab/data/train/labels/*
+robosenselab/data/val/images/*
+robosenselab/data/val/labels/*
+
+# Aber behalte den Ordner selbst
+!robosenselab/data/train/images/.gitkeep
+!robosenselab/data/train/labels/.gitkeep
+!robosenselab/data/val/images/.gitkeep
+!robosenselab/data/val/labels/.gitkeep
+
 
 # Ignoriere nachstehende Datentypen
 *.png
@@ -21,6 +28,5 @@ __init__.py
 *.jpeg
 *.pt
 *.csv
-*.pt
 
 

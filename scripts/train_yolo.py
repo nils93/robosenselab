@@ -2,7 +2,7 @@ import subprocess
 
 def train_yolo(
     model="yolo11s.pt",
-    data_yaml="yolo/ultralytics/data.yaml",
+    data_yaml="yolo/data.yaml",
     epochs=500,
     imgsz=640,
     batch=8,

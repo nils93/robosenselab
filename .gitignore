@@ -1,10 +1,11 @@
 # Ignoriere nachstehende Verzeichnisse
+archiv/
 ungültig/
 learnings/
 outputs/
 yolo/
-cosypose/
-PoseCNN/
+megapose6d/
+
 
 
 __pycache__
